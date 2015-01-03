@@ -1,0 +1,224 @@
+#!/bin/bash
+
+#
+# Replace an user from the repo.
+#
+
+# debug {{{
+eval SCRIPT_DEBUG="\$$(basename $0 | tr - _)_DEBUG"
+SCRIPT_DEBUG=${SCRIPT_DEBUG:--1}
+
+if [ "$SCRIPT_DEBUG" -ge 1 ]
+then
+   set -x
+fi
+if [ "$SCRIPT_DEBUG" -ge 10 ]
+then
+   set -v
+fi
+# }}}
+
+# init {{{
+REPLACE="author"
+DRY_RUN=0
+# }}} 
+
+# functions {{{ 
+function help {
+   local scriptname="$(basename $0)"
+   cat >&2 <<EOF
+
+$scriptname [options]
+
+Replace an user from the repo.
+
+As git concerns about author and committer, there is a MODE on this
+script, which decides what changes --name and --mail opt will do.
+
+Options:
+   -a, --author           Old author email. Change MODE to AUTHOR.
+   -c, --committer        Old committer email. Change MODE to COMMITER.
+   -b, --both             Define old author and committer at same time.
+   -n, --name             Sets the new name for actual MODE.
+   -m, --mail             Sets the new email for actual MODE.
+       --dry-run          Shows what changes would be done.
+       --show-authors     Shows all authors on repo.
+       --show-committers  Show all committers on repo.
+       --show-both        Show all authors and committers on repo.
+   -h, --help             Shows this help.
+
+Examples:
+
+ # change author matchings on current branch
+ $ $scriptname -a old@email.com -n newname -m new@email.com
+
+ # change author and committer matchings on <branch> and <branch2>. Pass `-f` 
+ # to filter-branch to allow rewriting backups
+ $ $scriptname -b old@email.com -n newname -m new@email.com -- -f <branch> <branch2>
+
+ # show results
+ $ $scriptname --show-both
+
+EOF
+}
+
+function parse_args {
+   local scriptname="$(basename $0)"
+   local shortopts="$1"
+   shift
+   local longopts="$1"
+   shift
+   TEMP=$(getopt -o "$shortopts" -l "$longopts" -n $scriptname -- "$@")
+
+   EXIT=$?
+   if [ $EXIT != 0 ]
+   then
+      help
+      exit $EXIT
+   fi
+   
+# process script arguments
+eval set -- "$TEMP"
+}
+
+function show_change {
+   cat << EOF
+$1 will be matched to replace:
+   name: $2
+   mail: $3
+EOF
+}
+
+# }}} 
+
+# parse args {{{ 
+
+parse_args "a:c:b:n:m:" "author:,committer:,both:,name:,mail:,dry-run,show-authors,show-committers,show-both" "$@"
+
+while true
+do
+   case "$1" in
+      -a|--author)
+         ARG=$2
+         shift
+         REPLACE="author"
+         OLD_AUTHOR_EMAIL=$ARG
+         ;;
+      -c|--committer)
+         ARG=$2
+         shift
+         REPLACE="committer"
+         OLD_COMMITTER_EMAIL=$ARG
+         ;;
+      -b|--both)
+         ARG=$2
+         shift
+         REPLACE="both"
+         OLD_AUTHOR_EMAIL=$ARG
+         OLD_COMMITTER_EMAIL=$ARG
+         ;;
+      -n|--name)
+         ARG=$2
+         shift
+         if [ "$REPLACE" == "author" ] || [ "$REPLACE" == "both" ]
+         then
+            NEW_AUTHOR_NAME="$ARG"
+         fi
+         if [ "$REPLACE" == "committer" ] || [ "$REPLACE" == "both" ]
+         then
+            NEW_COMMITTER_NAME="$ARG"
+         fi
+         ;;
+      -m|--mail)
+         ARG=$2
+         shift
+         if [ "$REPLACE" == "author" ] || [ "$REPLACE" == "both" ]
+         then
+            NEW_AUTHOR_EMAIL="$ARG"
+         fi
+         if [ "$REPLACE" == "committer" ] || [ "$REPLACE" == "both" ]
+         then
+            NEW_COMMITTER_EMAIL="$ARG"
+         fi
+         ;;
+      --show-authors)
+         git log --all --format="%aN <%aE>" | sort -u
+         exit 0
+         ;;
+      --show-committers)
+         git log --all --format="%cN <%cE>" | sort -u
+         exit 0
+         ;;
+      --show-both)
+         git log --all --format="%aN <%aE> (author)%n%cN <%cE> (committer)" | sort -u
+         exit 0
+         ;;
+      --show-committers)
+         git log --all --format="%cN <%cE>" | sort -u
+         exit 0
+         ;;
+      --dry-run)
+         DRY_RUN=1
+         ;;
+      -h|--help)
+         help
+         exit
+         ;;
+      --)
+         shift
+         break 
+         ;;
+      *)
+         cat <&2 <<EOF
+
+Error, unknown arguments $1
+EOF
+         help
+         exit 1
+         ;;
+   esac
+   shift
+done
+# }}} 
+
+# exec {{{
+if [ $DRY_RUN == 1 ]
+then
+   if [ "$OLD_COMMITTER_EMAIL" != "" ]
+   then
+      show_change $OLD_COMMITTER_EMAIL $NEW_COMMITTER_NAME $NEW_COMMITTER_EMAIL
+   fi
+   if [ "$OLD_AUTHOR_EMAIL" != "" ]
+   then
+      show_change $OLD_AUTHOR_EMAIL $NEW_AUTHOR_NAME $NEW_AUTHOR_EMAIL
+   fi
+   exit 0
+fi
+
+git filter-branch --commit-filter '
+
+an="$GIT_AUTHOR_NAME"
+am="$GIT_AUTHOR_EMAIL"
+cn="$GIT_COMMITTER_NAME"
+cm="$GIT_COMMITTER_EMAIL"
+
+if [ "'$OLD_COMMITTER_EMAIL'" != "" ] && [ "$GIT_COMMITTER_EMAIL" = "'$OLD_COMMITTER_EMAIL'" ]
+then
+    cn="'$NEW_COMMITTER_NAME'"
+    cm="'$NEW_COMMITTER_EMAIL'"
+fi
+if [ "'$OLD_AUTHOR_EMAIL'" != "" ] && [ "$GIT_AUTHOR_EMAIL" = "'$OLD_AUTHOR_EMAIL'" ]
+then
+    an="'$NEW_AUTHOR_NAME'"
+    am="'$NEW_AUTHOR_EMAIL'"
+fi
+
+export GIT_AUTHOR_NAME="$an"
+export GIT_AUTHOR_EMAIL="$am"
+export GIT_COMMITTER_NAME="$cn"
+export GIT_COMMITTER_EMAIL="$cm"
+git commit-tree "$@"
+' $@
+# }}} 
+
+# vim: fdm=marker
