@@ -186,11 +186,11 @@ if [ $DRY_RUN == 1 ]
 then
    if [ "$OLD_COMMITTER_EMAIL" != "" ]
    then
-      show_change $OLD_COMMITTER_EMAIL $NEW_COMMITTER_NAME $NEW_COMMITTER_EMAIL
+      show_change "$OLD_COMMITTER_EMAIL" "$NEW_COMMITTER_NAME" "$NEW_COMMITTER_EMAIL"
    fi
    if [ "$OLD_AUTHOR_EMAIL" != "" ]
    then
-      show_change $OLD_AUTHOR_EMAIL $NEW_AUTHOR_NAME $NEW_AUTHOR_EMAIL
+      show_change "$OLD_AUTHOR_EMAIL" "$NEW_AUTHOR_NAME" "$NEW_AUTHOR_EMAIL"
    fi
    exit 0
 fi
