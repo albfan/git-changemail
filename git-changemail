@@ -76,9 +76,6 @@ function parse_args {
       help
       exit $EXIT
    fi
-   
-# process script arguments
-eval set -- "$TEMP"
 }
 
 function show_change {
@@ -94,6 +91,9 @@ EOF
 # parse args {{{ 
 
 parse_args "a:c:b:n:m:" "author:,committer:,both:,name:,mail:,dry-run,show-authors,show-committers,show-both" "$@"
+   
+# process script arguments
+eval set -- "$TEMP"
 
 while true
 do
