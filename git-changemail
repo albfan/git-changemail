@@ -6,7 +6,9 @@
 
 # debug {{{
 eval SCRIPT_DEBUG="\$$(basename $0 | tr - _)_DEBUG"
-SCRIPT_DEBUG=${SCRIPT_DEBUG:--1}
+if ! [[ $SCRIPT_DEBUG =~ $'^[0-9]+$' ]] ; then
+   SCRIPT_DEBUG=-1
+fi
 
 if [ "$SCRIPT_DEBUG" -ge 1 ]
 then
