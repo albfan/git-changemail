@@ -204,15 +204,27 @@ am="$GIT_AUTHOR_EMAIL"
 cn="$GIT_COMMITTER_NAME"
 cm="$GIT_COMMITTER_EMAIL"
 
-if [ "'$OLD_COMMITTER_EMAIL'" != "" ] && [ "$GIT_COMMITTER_EMAIL" = "'$OLD_COMMITTER_EMAIL'" ]
+if [ "'"$OLD_COMMITTER_EMAIL"'" != "" ] && [ "$GIT_COMMITTER_EMAIL" = "'"$OLD_COMMITTER_EMAIL"'" ]
 then
-    cn="'"$NEW_COMMITTER_NAME"'"
-    cm="'"$NEW_COMMITTER_EMAIL"'"
+    if [ "'"$NEW_COMMITTER_NAME"'" != "" ]
+    then
+        cn="'"$NEW_COMMITTER_NAME"'"
+    fi
+    if [ "'"$NEW_COMMITTER_EMAIL"'" != "" ]
+    then
+        cm="'"$NEW_COMMITTER_EMAIL"'"
+    fi
 fi
-if [ "'$OLD_AUTHOR_EMAIL'" != "" ] && [ "$GIT_AUTHOR_EMAIL" = "'$OLD_AUTHOR_EMAIL'" ]
+if [ "'"$OLD_AUTHOR_EMAIL"'" != "" ] && [ "$GIT_AUTHOR_EMAIL" = "'"$OLD_AUTHOR_EMAIL"'" ]
 then
-    an="'"$NEW_AUTHOR_NAME"'"
-    am="'"$NEW_AUTHOR_EMAIL"'"
+    if [ "'"$NEW_AUTHOR_NAME"'" != "" ]
+    then
+        an="'"$NEW_AUTHOR_NAME"'"
+    fi
+    if [ "'"$NEW_AUTHOR_EMAIL"'" != "" ]
+    then
+        am="'"$NEW_AUTHOR_EMAIL"'"
+    fi
 fi
 
 export GIT_AUTHOR_NAME="$an"
