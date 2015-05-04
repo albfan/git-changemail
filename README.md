@@ -2,7 +2,7 @@
 
 Replace an user from the repo.
 
-## background
+## Background
 
 I've had so many headaches about authors and committers, that finally I managed to built this script.
 
@@ -18,11 +18,11 @@ $ cd git-changemail
 $ ln -s $PWD/git-changemail ~/bin/
 ```
 
-## usage
+## Usage
 
 `git changemail` or `git changemail -h` must show you how to use it
 
-## examples
+## Examples
 
 Change author matchings on current branch
 
@@ -36,7 +36,13 @@ Show existing users on repo
 
     $ git changemail --show-both
 
+## Tips
 
+- Consider to use [git-backup-clean](https://github.com/albfan/git-backup-clean) as git-change-mail uses filter-branch to operate and that lefts a backup on refs/original/refs/heads/master
 
+- if everything goes wrong issue:
 
+    $ git reset --hard refs/original/refs/heads/master
+
+Also remember `git reflog` is your friend
 
