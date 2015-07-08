@@ -13,7 +13,7 @@ read [this](http://stacktoheap.com/blog/2013/01/06/using-mailmap-to-fix-authors-
 Download and symlink to your path
 
 ```bash
-$ git clone git@github.com:albfan/git-changemail.git
+$ git clone https://github.com/albfan/git-changemail 
 $ cd git-changemail
 $ ln -s $PWD/git-changemail ~/bin/
 ```
