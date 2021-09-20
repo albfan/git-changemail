@@ -38,9 +38,9 @@ fi
 # init {{{
 REPLACE="author"
 DRY_RUN=0
-# }}} 
+# }}}
 
-# functions {{{ 
+# functions {{{
 function help {
    local scriptname="$(basename $0)"
    cat >&2 <<EOF
