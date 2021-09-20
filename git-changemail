@@ -69,7 +69,7 @@ Examples:
  # change author matchings on current branch
  $ $scriptname -a old@email.com -n newname -m new@email.com
 
- # change author and committer matchings on <branch> and <branch2>. Pass `-f` 
+ # change author and committer matchings on <branch> and <branch2>. Pass \`-f\`
  # to filter-branch to allow rewriting backups
  $ $scriptname -b old@email.com -n newname -m new@email.com -- -f <branch> <branch2>
 
