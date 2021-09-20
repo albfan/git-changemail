@@ -18,6 +18,14 @@ $ cd git-changemail
 $ ln -s $PWD/git-changemail ~/bin/
 ```
 
+Alternatively you can install system wide:
+
+```bash
+./autogen.sh --prefix /usr
+make
+sudo make install
+```
+
 ## Usage
 
 `git changemail` or `git changemail -h` must show you how to use it
