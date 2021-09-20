@@ -85,9 +85,15 @@ function parse_args {
    shift
    local longopts="$1"
    shift
-   TEMP=$(getopt -o "$shortopts" -l "$longopts" -n $scriptname -- "$@")
+   PARAMS="$@"
+   EXIT=1
+   if [ -n "$PARAMS" ]
+   then
+     TEMP=$(getopt -o "$shortopts" -l "$longopts" -n $scriptname -- "$PARAMS")
 
-   EXIT=$?
+     EXIT=$?
+   fi
+
    if [ $EXIT != 0 ]
    then
       help
