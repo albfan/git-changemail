@@ -8,7 +8,7 @@ I've had so many headaches about authors and committers, that finally I managed 
 
 read [this](http://stacktoheap.com/blog/2013/01/06/using-mailmap-to-fix-authors-list-in-git/) for real stories about people collaborating on git.
 
-##Installation
+## Installation
 
 Download and symlink to your path
 
